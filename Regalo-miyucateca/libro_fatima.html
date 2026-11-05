@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para mi amada Fátima - Nuestra Historia de Amor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Lora:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #d63031;
+            --primary-light: #ff7675;
+            --secondary: #6c5ce7;
+            --bg-dark: #0f0c20;
+            --paper: #fffcf7;
+            --paper-border: #f0e6d2;
+            --text-dark: #2d3436;
+            --gold: #d4af37;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(214, 48, 49, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 85% 85%, rgba(108, 92, 231, 0.15) 0%, transparent 40%);
+            color: #fff;
+            font-family: 'Montserrat', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 10px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        #heartCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        header h1 {
+            font-family: 'Dancing Script', cursive;
+            font-size: 3rem;
+            color: var(--primary-light);
+            text-shadow: 0 0 15px rgba(255, 118, 117, 0.4);
+            margin-bottom: 5px;
+        }
+
+        header p {
+            font-size: 0.95rem;
+            color: #a4b0be;
+            letter-spacing: 1px;
+        }
+
+        .view {
+            display: none;
+            width: 100%;
+            flex-direction: column;
+            align-items: center;
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        .view.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .menu-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        .menu-card h2 {
+            font-family: 'Dancing Script', cursive;
+            font-size: 2.5rem;
+            color: var(--primary-light);
+            margin-bottom: 15px;
+        }
+
+        .menu-card p {
+            color: #dcdde1;
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .menu-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .menu-btn {
+            background: linear-gradient(135deg, var(--primary), #ff6b81);
+            color: white;
+            border: none;
+            padding: 14px 25px;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(214, 48, 49, 0.4);
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .menu-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(214, 48, 49, 0.6);
+        }
+
+        .menu-btn.secondary {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: none;
+        }
+
+        .menu-btn.secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        #loadingView {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .loader-heart {
+            font-size: 5rem;
+            animation: heartbeat 1.2s infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            15% { transform: scale(1.3); }
+            30% { transform: scale(1); }
+            45% { transform: scale(1.25); }
+            60% { transform: scale(1); }
+        }
+
+        .loading-text {
+            font-family: 'Dancing Script', cursive;
+            font-size: 2rem;
+            color: var(--primary-light);
+            margin-bottom: 10px;
+        }
+
+        .loading-subtext {
+            color: #a4b0be;
+            font-size: 0.95rem;
+        }
+
+        .audio-control {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .audio-control:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+        }
+
+        .audio-control span {
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .book-wrapper {
+            width: 100%;
+            perspective: 1500px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .book {
+            width: 100%;
+            max-width: 780px;
+            min-height: 560px;
+            background: var(--paper);
+            color: var(--text-dark);
+            border-radius: 12px;
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.5),
+                0 0 0 1px var(--paper-border),
+                inset -10px 0 20px rgba(0, 0, 0, 0.05);
+            position: relative;
+            padding: 40px 45px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.6s ease, opacity 0.4s ease;
+            background-image: linear-gradient(to right, rgba(0,0,0,0.05) 0%, transparent 5%, transparent 95%, rgba(0,0,0,0.03) 100%);
+        }
+
+        .book::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 25px;
+            width: 2px;
+            height: 100%;
+            background: rgba(212, 175, 55, 0.2);
+        }
+
+        .page-content {
+            opacity: 1;
+            transition: opacity 0.3s ease;
+        }
+
+        .page-content.fade-out {
+            opacity: 0;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        .chapter-tag {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .page-number {
+            font-family: 'Lora', serif;
+            font-size: 0.9rem;
+            color: #888;
+        }
+
+        .illustration-container {
+            text-align: center;
+            margin: 10px 0 15px 0;
+            height: 90px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .illustration-container svg {
+            max-height: 90px;
+            animation: floatIllustration 3s ease-in-out infinite;
+        }
+
+        @keyframes floatIllustration {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .page-title {
+            font-family: 'Dancing Script', cursive;
+            font-size: 2rem;
+            color: #1e272e;
+            margin-bottom: 15px;
+            line-height: 1.1;
+            text-align: center;
+        }
+
+        .page-body {
+            font-family: 'Lora', serif;
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #2d3436;
+            text-align: justify;
+        }
+
+        .page-body p {
+            margin-bottom: 12px;
+        }
+
+        .highlight-quote {
+            font-style: italic;
+            border-left: 3px solid var(--primary);
+            padding-left: 12px;
+            margin: 15px 0;
+            color: #485460;
+            font-size: 1.02rem;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 25px;
+            width: 100%;
+            max-width: 780px;
+        }
+
+        .btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn:hover:not(:disabled) {
+            background: var(--primary);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(214, 48, 49, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .progress-bar {
+            flex-grow: 1;
+            margin: 0 20px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            width: 10%;
+            transition: width 0.3s ease;
+        }
+
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        .card {
+            background-color: #2f3542;
+            height: 90px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            user-select: none;
+            transition: transform 0.3s, background-color 0.3s;
+            padding: 8px;
+            box-sizing: border-box;
+            border: 2px solid #ff4757;
+            text-align: center;
+        }
+        
+        .card.flipped {
+            background-color: #ffffff;
+            color: #2f3542;
+            transform: rotateY(180deg);
+        }
+        
+        .card.matched {
+            background-color: #2ed573;
+            color: #fff;
+            border-color: #2ed573;
+            cursor: default;
+        }
+        
+        #message {
+            margin-top: 15px;
+            font-size: 16px;
+            color: #2ed573;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        @media (max-width: 600px) {
+            .book {
+                padding: 25px 20px;
+                min-height: 580px;
+            }
+            header h1 {
+                font-size: 2.2rem;
+            }
+            .page-title {
+                font-size: 1.6rem;
+            }
+            .page-body {
+                font-size: 0.92rem;
+            }
+            .controls {
+                flex-wrap: wrap;
+                gap: 15px;
+                justify-content: center;
+            }
+            .progress-bar {
+                order: -1;
+                width: 100%;
+                margin: 0 0 10px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="heartCanvas"></canvas>
+
+    <div class="audio-control" id="audioBtn">
+        <span id="audioIcon">🎵</span>
+        <span id="audioText">Música</span>
+    </div>
+
+    <audio id="bgMusic" loop preload="auto">
+        <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=piano-moment-114828.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="container">
+        <header>
+            <h1>Nuestra Historia de Amor</h1>
+            <p>Omar & Fátima • Un amor escrito para siempre</p>
+        </header>
+
+        <!-- VISTA 1: MENÚ PRINCIPAL -->
+        <div id="menuView" class="view active">
+            <div class="menu-card">
+                <h2>Menú del Destino</h2>
+                <p>Bienvenida al espacio donde guardo cada latido de nuestra historia, creado con todo mi corazón para ti, Fátima[cite: 8].</p>
+                <div class="menu-buttons">
+                    <button class="menu-btn" onclick="startLoadingBook()">📖 Abrir Libro Digital</button>
+                    <button class="menu-btn secondary" onclick="switchView('memoryView')">🎮 Jugar Memorama</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- VISTA 2: CARGA DEL LIBRO -->
+        <div id="loadingView" class="view">
+            <div class="loader-heart">💖</div>
+            <div class="loading-text">Abriendo las páginas de nuestra historia...</div>
+            <div class="loading-subtext">Preparando cada recuerdo para ti, mi amor[cite: 8].</div>
+        </div>
+
+        <!-- VISTA 3: LIBRO DIGITAL -->
+        <div id="bookView" class="view">
+            <div class="book-wrapper">
+                <div class="book" id="bookPage">
+                    <div class="page-content" id="pageContent"></div>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button class="btn" id="prevBtn" onclick="changePage(-1)">← Anterior</button>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <button class="btn" id="nextBtn" onclick="changePage(1)">Siguiente →</button>
+            </div>
+            <div style="margin-top: 15px;">
+                <a href="index.html" class="menu-btn secondary" style="display: inline-block;">🏠 Volver a la Página Principal</a>
+            </div>
+        </div>
+
+        <!-- VISTA 4: MEMORAMA -->
+        <div id="memoryView" class="view">
+            <div class="menu-card" style="max-width: 600px;">
+                <h2>Memorama de Nuestro Amor</h2>
+                <p style="margin-bottom: 15px;">Encuentra las parejas de nuestras frases y momentos especiales[cite: 8].</p>
+                <div class="game-board" id="board"></div>
+                <div id="message"></div>
+                <div style="display: flex; justify-content: center; gap: 10px; margin-top: 20px;">
+                    <button class="btn" onclick="reiniciarJuego()">Reiniciar</button>
+                    <button class="btn secondary" onclick="switchView('menuView')">🏠 Menú</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchView(viewId) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+        }
+
+        function startLoadingBook() {
+            switchView('loadingView');
+            setTimeout(() => {
+                switchView('bookView');
+                renderPage();
+            }, 2200);
+        }
+
+        const storyPages = [
+            {
+                chapter: "Capítulo 1",
+                title: "Un Destino en la Pantalla de Free Fire",
+                svg: `<svg viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg"><path d="M40,40 Q100,10 160,40 Q100,70 40,40 Z" fill="none" stroke="#ff7675" stroke-width="2" stroke-dasharray="5,5"><animate attributeName="stroke-dashoffset" values="0;20" dur="1s" repeatCount="indefinite"/></path><circle cx="60" cy="40" r="12" fill="#d63031"/><circle cx="140" cy="40" r="12" fill="#6c5ce7"/><text x="55" y="44" fill="#fff" font-size="10">🎮</text><text x="135" y="44" fill="#fff" font-size="10">✨</text></svg>`,
+                content: `<p>Todo comenzó un día cualquiera conectándonos a una partida de Free Fire junto a mi gran amigo Iván. Entre risas, pláticas y bromas, decidimos mandar una invitación al mundo en general sin imaginar lo que vendría.</p><div class="highlight-quote">"Y fue justo en ese instante cuando la magia hizo su entrada triunfal: entre los jugadores que se unieron, apareció ella, mi amada Fátima."</div><p>Su presencia comenzó a cambiarlo todo desde el primer segundo en que su voz cruzó la pantalla.</p>`
+            },
+            {
+                chapter: "Capítulo 2",
+                title: "La Chica de Guadalajara y la 'Yucateca'",
+                svg: `<svg viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg"><circle cx="100" cy="40" r="25" fill="#ffeaa7" stroke="#fdcb6e" stroke-width="2"/><path d="M90,35 Q100,25 110,35" fill="none" stroke="#2d3436" stroke-width="2"/><circle cx="93" cy="35" r="2" fill="#2d3436"/><circle cx="107" cy="35" r="2" fill="#2d3436"/><path d="M95,48 Q100,53 105,48" fill="none" stroke="#d63031" stroke-width="2"/><text x="75" y="20" font-size="14">🌴</text><text x="115" y="20" font-size="14">🎙️</text></svg>`,
+                content: `<p>Fátima encendió su micrófono y nos habló. Al preguntarle de dónde era, respondió que de Guadalajara. Con mi chispa juguetona, le dije que su tono sonaba como el de una yucateca, bautizándola con ese apodo tan especial.</p><div class="highlight-quote">"Desde ese momento, ese apodo se convirtió en nuestro sello especial y en nuestra primera complicidad."</div><p>Intercambiamos Instagram y sentí una curiosidad inmensa por conocerla más.</p>`
+            },
+            {
+                chapter: "Capítulo 3",
+                title: "Un Mensaje y un Giro Inesperado",
+                svg: `<svg viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg"><rect x="60" y="25" width="80" height="40" rx="8" fill="#74b9ff"/><polygon points="70,65 65,75 80,65" fill="#74b9ff"/><text x="85" y="50" font-size="18">💌</text></svg>`,
+                content: `<p>El primer mensaje que le mandé tenía el propósito de ayudar a mi amigo Iván, haciéndoles bromas sobre un traje en conjunto en el juego. Sin embargo, el destino tenía otros planes para nosotros.</p><div class="highlight-quote">"La conversación fluyó sin parar, convirtiendo las charlas en un puente invisible entre su mundo y el mío."</div><p>Primero fuimos grandes amigos, riendo y compartiendo momentos inolvidables.</p>`
+            },
+            {
+                chapter: "Capítulo 4",
+                title: "El Abrazo Invisible que Sanó mi Alma",
+                svg: `<svg viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg"><path d="M100,20 C80,5 50,30 70,60 C85,75 100,65 100,65 C100,65 115,75 130,60 C150,30 120,5 100,20 Z" fill="#ff7675"><animate attributeName="transform" type="scale" values="1;1.1;1" dur="1.2s" repeatCount="indefinite" transform-origin="100 40"/></path></svg>`,
+                content: `<p>Yo venía cargando con el peso de una pequeña depresión por una relación anterior, una herida que no le conté a nadie. Pero pasar tiempo con Fátima, escucharla y reír juntos se convirtió en mi medicina.</p><div class="highlight-quote">"Su calidez y la comodidad a su lado empezaron a sanar mi alma. Con ella volví a sentirme yo mismo."</div><p>Fue el abrazo cálido que tanto necesitaba para despertar de nuevo.</p>`
+            },
+            {
+                chapter: "Capítulo 5",
+                title: "Corazones en el Campo de Batalla",
+                svg: `<svg viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg"><circle cx="70" cy="40" r="15" fill="#fab1a0"/><circle cx="130" cy="40" r="15" fill="#81ecec"/><text x="92" y="45" font-size="16">💖</text></svg>`,
+                content: `<p>Las bromas de ser novios se volvieron frecuentes. Me confesó que en una partida me había hecho corazones virtuales para ver mi reacción. Yo vine a ayudar a un amigo, pero terminé enamorado totalmente de ella.</p><div class="highlight-quote">"Fátima se había adueñado por completo de mis pensamientos y de mi vida entera."</div>`
+            },
+            {
+                chapter: "Capítulo 6",
+                title: "La Tormenta y el Arrepentimiento",
+                svg: `<svg viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg"><path d="M90,20 L100,50 L110,20 Z" fill="#fdcb6e"/><circle cx="100" cy="60" r="5" fill="#ff7675"/></svg>`,
+                content: `<p>En un intento absurdo por ponerla celosa, busqué a una chica en la Isla Social. La broma se salió de las manos y lastimé profundamente a Fátima. Verla dolida me destrozó por dentro.</p><div class="highlight-quote">"Ese día aprendí una lección muy dolorosa sobre el valor de cuidar un corazón sincero. Aún hoy me arrepiento."</div>`
+            },
+            {
+                chapter: "Capítulo 7",
+                title: "El Desafío del Exterminador",
+                svg: `<svg viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg"><rect x="70" y="30" width="60" height="30" rx="5" fill="#2d3436"/><circle cx="85" cy="45" r="8" fill="#00b894"/><circle cx="115" cy="45" r="8" fill="#d63031"/></svg>`,
+                content: `<p>Fátima me puso una condición: si quería una oportunidad, tenía que lograr un "exterminador" en Free Fire, matando a la escuadra enemiga yo solo. Me costó intentos y frustración, pero jamás me rendí.</p><div class="highlight-quote">"Lo hacía por ella y por el tamaño gigante de mi amor."</div>`
+            },
+            {
+                chapter: "Capítulo 8",
+                title: "La Gloria y mi Motor de Vida",
+                svg: `<svg viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg"><polygon points="100,15 110,35 130,40 115,55 120,75 100,65 80,75 85,55 70,40 90,35" fill="#fdcb6e"/></svg>`,
+                content: `<p>¡Por fin lo logré! Sentí una paz y calma absoluta no solo por la victoria, sino porque logré mi objetivo con mi motor de vida: el amor de mi Fátima. Le pregunté si se sentía lista, y me dijo que sí.</p><div class="highlight-quote">"Así comenzó oficialmente nuestro camino juntos."</div>`
+            },
+            {
+                chapter: "Capítulo 9",
+                title: "Promesa de Cuidado y Refugio",
+                svg: `<svg viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg"><path d="M60,50 Q100,10 140,50" fill="none" stroke="#74b9ff" stroke-width="3"/><circle cx="100" cy="35" r="10" fill="#a29bfe"/></svg>`,
+                content: `<p>Quiero ser todo para ella, jamás abandonarla y estar a su lado hasta que me lo permita. Este regalo es mi agradecimiento por haberme sanado y mostrarme que amar es lo más bello.</p><div class="highlight-quote">"Prometo ser el mejor hombre posible para ella en cada amanecer."</div>`
+            },
+            {
+                chapter: "Capítulo 10",
+                title: "Un Futuro Eterno: Vives en Mí",
+                svg: `<svg viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg"><text x="70" y="45" font-size="28">💍</text><text x="110" y="45" font-size="28">♾️</text></svg>`,
+                content: `<p>Más que amarla, Fátima vive en mí. Jamás quisiera soltarla. Quiero todo mi futuro a su lado, que sea mi esposa y madre de mis hijos.</p><div class="highlight-quote">"Te amo con cada fibra de mi alma, Fátima, y te prometo que nuestro amor será verdaderamente eterno."</div>`
+            }
+        ];
+
+        let currentPage = 0;
+
+        function renderPage() {
+            const pageData = storyPages[currentPage];
+            const contentDiv = document.getElementById("pageContent");
+            
+            contentDiv.classList.add("fade-out");
+
+            setTimeout(() => {
+                contentDiv.innerHTML = `
+                    <div class="page-header">
+                        <span class="chapter-tag">${pageData.chapter}</span>
+                        <span class="page-number">Página ${currentPage + 1} de ${storyPages.length}</span>
+                    </div>
+                    <div class="illustration-container">${pageData.svg}</div>
+                    <h2 class="page-title">${pageData.title}</h2>
+                    <div class="page-body">
+                        ${pageData.content}
+                    </div>
+                `;
+                contentDiv.classList.remove("fade-out");
+            }, 300);
+
+            document.getElementById("prevBtn").disabled = currentPage === 0;
+            document.getElementById("nextBtn").innerText = currentPage === storyPages.length - 1 ? "Fin ❤️" : "Siguiente →";
+
+            const progressPercent = ((currentPage + 1) / storyPages.length) * 100;
+            document.getElementById("progressFill").style.width = `${progressPercent}%`;
+        }
+
+        function changePage(direction) {
+            if (currentPage + direction >= 0 && currentPage + direction < storyPages.length) {
+                currentPage += direction;
+                renderPage();
+            }
+        }
+
+        const frases = [
+            "La Yucateca", "Me sanaste", "Exterminador", "Mi esposa", 
+            "Corazones en partida", "Mi motor de vida", "Amor eterno", "Vives en mí"
+        ];
+        let cartas = [...frases, ...frases];
+        let primeraCarta = null;
+        let segundaCarta = null;
+        let bloqueate = false;
+        let paresEncontrados = 0;
+
+        function mezclarCartas() {
+            cartas.sort(() => Math.random() - 0.5);
+        }
+
+        function crearTablero() {
+            const board = document.getElementById('board');
+            board.innerHTML = '';
+            mezclarCartas();
+
+            cartas.forEach((frase, index) => {
+                const card = document.createElement('div');
+                card.classList.add('card');
+                card.dataset.frase = frase;
+                card.dataset.index = index;
+                card.innerText = '❓';
+                card.addEventListener('click', voltearCarta);
+                board.appendChild(card);
+            });
+            document.getElementById('message').innerText = '';
+            paresEncontrados = 0;
+        }
+
+        function voltearCarta() {
+            if (bloqueate) return;
+            if (this === primeraCarta) return;
+            if (this.classList.contains('matched')) return;
+
+            this.classList.add('flipped');
+            this.innerText = this.dataset.frase;
+
+            if (!primeraCarta) {
+                primeraCarta = this;
+                return;
+            }
+
+            segundaCarta = this;
+            verificarPareja();
+        }
+
+        function verificarPareja() {
+            let coincide = primeraCarta.dataset.frase === segundaCarta.dataset.frase;
+
+            if (coincide) {
+                primeraCarta.classList.add('matched');
+                segundaCarta.classList.add('matched');
+                resetearTurno();
+                paresEncontrados++;
+
+                if (paresEncontrados === frases.length) {
+                    document.getElementById('message').innerText = '💖 ¡Felicidades mi amor, nuestro destino ya está escrito! 💖';
+                }
+            } else {
+                bloqueate = true;
+                setTimeout(() => {
+                    primeraCarta.classList.remove('flipped');
+                    segundaCarta.classList.remove('flipped');
+                    primeraCarta.innerText = '❓';
+                    segundaCarta.innerText = '❓';
+                    resetearTurno();
+                }, 1000);
+            }
+        }
+
+        function resetearTurno() {
+            primeraCarta = null;
+            segundaCarta = null;
+            bloqueate = false;
+        }
+
+        function reiniciarJuego() {
+            crearTablero();
+        }
+
+        crearTablero();
+
+        const bgMusic = document.getElementById("bgMusic");
+        const audioBtn = document.getElementById("audioBtn");
+        const audioIcon = document.getElementById("audioIcon");
+        const audioText = document.getElementById("audioText");
+        let isPlaying = false;
+
+        audioBtn.addEventListener("click", () => {
+            if (isPlaying) {
+                bgMusic.pause();
+                audioIcon.innerText = "🎵";
+                audioText.innerText = "Música";
+            } else {
+                bgMusic.play();
+                audioIcon.innerText = "⏸️";
+                audioText.innerText = "Pausar";
+            }
+            isPlaying = !isPlaying;
+        });
+
+        const canvas = document.getElementById("heartCanvas");
+        const ctx = canvas.getContext("2d");
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener("resize", resizeCanvas);
+        resizeCanvas();
+
+        const hearts = [];
+        for (let i = 0; i < 25; i++) {
+            hearts.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                size: Math.random() * 12 + 6,
+                speedY: Math.random() * 1 + 0.3,
+                opacity: Math.random() * 0.5 + 0.2
+            });
+        }
+
+        function drawHeart(x, y, size, color) {
+            ctx.save();
+            ctx.beginPath();
+            ctx.fillStyle = color;
+            ctx.translate(x, y);
+            ctx.moveTo(0, 0);
+            ctx.bezierCurveTo(-size / 2, -size / 2, -size, size / 3, 0, size);
+            ctx.bezierCurveTo(size, size / 3, size / 2, -size / 2, 0, 0);
+            ctx.fill();
+            ctx.restore();
+        }
+
+        function animateHearts() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            hearts.forEach(h => {
+                h.y -= h.speedY;
+                if (h.y < -20) {
+                    h.y = canvas.height + 20;
+                    h.x = Math.random() * canvas.width;
+                }
+                drawHeart(h.x, h.y, h.size, `rgba(255, 118, 117, ${h.opacity})`);
+            });
+            requestAnimationFrame(animateHearts);
+        }
+
+        animateHearts();
+    </script>
+</body>
+</html>

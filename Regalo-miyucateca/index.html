@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para Ti - Experiencia Romántica ❤️</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- Canvas del Motor de Partículas (Copos Blancos) -->
+    <canvas id="canvasParticulas"></canvas>
+
+    <!-- REPRODUCTOR FLOTANTE (OCULTO HASTA EL 20 DE NOVIEMBRE) -->
+    <div id="reproductorFlotante" class="reproductor-contenedor oculto-por-fecha">
+        <div id="tarjetaSignificado" class="tarjeta-significado oculto-significado">
+            <p id="textoSignificado">Significado de la canción...</p>
+        </div>
+
+        <div class="vinilo-contenedor" id="discoVinilo" onmouseover="mostrarSignificado()" onmouseout="ocultarSignificado()">
+            <div class="disco-vinilo" id="discoViniloAnimado">
+                <img src="portada1.jpeg" id="imgPortadaDisco" class="portada-centro-disco" alt="Portada Álbum" onerror="this.src='snoopy.jpg'">
+                <div class="agujero-centro-vinilo"></div>
+            </div>
+        </div>
+
+        <div class="info-reproductor">
+            <span class="etiqueta-cancion-reproductor">Nuestra Música 💖</span>
+            <span class="titulo-cancion" id="txtCancion">Amor Fugaz</span>
+            
+            <div class="controles-musica">
+                <button onclick="cancionAnterior()" class="btn-musica" title="Anterior">⏮️</button>
+                <button onclick="conmutarMusica()" id="btnPlayPausa" class="btn-musica btn-play" title="Play/Pausa">▶️</button>
+                <button onclick="siguienteCancion()" class="btn-musica" title="Siguiente">⏭️</button>
+            </div>
+
+            <!-- MODULADOR DE VOLUMEN -->
+            <div class="control-volumen">
+                <span class="icono-volumen">🔊</span>
+                <input type="range" id="rangoVolumen" min="0" max="1" step="0.05" value="1" oninput="cambiarVolumen(this.value)">
+            </div>
+        </div>
+
+        <audio id="reproductorAudio" preload="auto"></audio>
+    </div>
+
+    <!-- PANTALLA DE INICIO / LOGIN CON CONTADOR REGRESIVO -->
+    <div class="card" id="tarjetaPrincipal">
+        <h1>¡Bienvenida, Princesa! ✨</h1>
+        <p class="mensaje">Para desbloquear tu regalo especial, espera a que llegue el gran día:</p>
+
+        <!-- CAJA DEL CONTADOR REGRESIVO -->
+        <div id="contenedorContador" class="caja-contador">
+            <span class="titulo-contador">⏳ Cuenta Regresiva para el 20 de Noviembre ⏳</span>
+            <div class="reloj-regresivo">
+                <div class="bloque-tiempo"><span id="dias">00</span><small>Días</small></div>
+                <div class="bloque-tiempo"><span id="horas">00</span><small>Horas</small></div>
+                <div class="bloque-tiempo"><span id="minutos">00</span><small>Min</small></div>
+                <div class="bloque-tiempo"><span id="segundos">00</span><small>Seg</small></div>
+            </div>
+            <p id="mensajeBloqueo" class="texto-bloqueo">🔒 El regalo aún está sellado por el tiempo...</p>
+        </div>
+        
+        <input type="text" id="inputNombre" placeholder="Escribe tu nombre aquí..." autocomplete="off">
+        <button id="btnVerificar" disabled>🔒 Regalo Bloqueado 🔒</button>
+
+        <div id="mensajeRespuesta" class="respuesta"></div>
+    </div>
+
+    <!-- ESCENA DE TRANSICIÓN ANIMADA -->
+    <div id="pantallaAnimacion" class="oculto-transicion">
+        <div class="escena-amor anime-style-cinematic">
+            <div class="titulo-mision-gta">
+                <span class="tag-mision">SECUENCIA ESPECIAL DESBLOQUEADA</span>
+                <h2>MÉRIDA - YUCATÁN</h2>
+            </div>
+
+            <div class="arena-videojuego-3d">
+                <!-- Personaje Omar Vectorial -->
+                <div class="muneco-anime-3d personaje-omar" id="personajeOmar">
+                    <svg class="svg-personaje" viewBox="0 0 100 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M30 180 L42 120 L50 120 L40 180 Z" fill="#1e293b"/>
+                        <path d="M70 180 L58 120 L50 120 L60 180 Z" fill="#0f172a"/>
+                        <rect x="25" y="55" width="50" height="70" rx="12" fill="url(#gradOmarCuerpo)"/>
+                        <path d="M25 55 Q 10 90 20 115 L 28 110 L 32 65 Z" fill="#0284c7"/>
+                        <path d="M75 55 Q 90 90 80 115 L 72 110 L 68 65 Z" fill="#0369a1"/>
+                        <circle cx="50" cy="32" r="20" fill="#ffdfc4"/>
+                        <path d="M28 25 C 28 10, 72 10, 72 25 C 65 5, 35 5, 28 25 Z" fill="#0f172a"/>
+                        <path d="M32 20 L 40 32 L 45 18 L 52 30 L 60 16 L 68 28 Z" fill="#1e293b"/>
+                        <circle cx="43" cy="32" r="3" fill="#0284c7"/>
+                        <circle cx="57" cy="32" r="3" fill="#0284c7"/>
+                        <path d="M44 42 Q 50 47 56 42" stroke="#b91c1c" stroke-width="2" stroke-linecap="round"/>
+                        <defs>
+                            <linearGradient id="gradOmarCuerpo" x1="0" y1="0" x2="1" y2="1">
+                                <stop offset="0%" stop-color="#00dfd8"/>
+                                <stop offset="100%" stop-color="#0284c7"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                    <span class="etiqueta-tag-player">OMAR (PLAYER 1)</span>
+                </div>
+
+                <!-- Zona Abrazo Dinámica -->
+                <div class="zona-abrazo-central" id="zonaAbrazo">
+                    <div class="corazon-abrazo-3d">💖</div>
+                    <div class="ondas-choque-abrazo"></div>
+                    <div class="particulas-amor-anime">✨💕🌸💫</div>
+                </div>
+
+                <!-- Personaje Fátima Vectorial -->
+                <div class="muneco-anime-3d personaje-fatima" id="personajeFatima">
+                    <svg class="svg-personaje" viewBox="0 0 100 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M22 10 C 15 -5, 85 -5, 78 10 C 95 30, 95 90, 80 120 L 70 120 C 85 80, 80 30, 72 22 L 28 22 C 20 30, 15 80, 30 120 L 20 120 C 5 90, 5 30, 22 10 Z" fill="#451a03"/>
+                        <path d="M32 180 L 20 120 L 80 120 L 68 180 Z" fill="#831843"/>
+                        <rect x="26" y="55" width="48" height="68" rx="14" fill="url(#gradFatimaCuerpo)"/>
+                        <circle cx="50" cy="32" r="19" fill="#fff0e0"/>
+                        <path d="M26 22 C 35 12, 65 12, 74 22 C 60 26, 40 26, 26 22 Z" fill="#7c2d12"/>
+                        <circle cx="43" cy="32" r="3" fill="#db2777"/>
+                        <circle cx="57" cy="32" r="3" fill="#db2777"/>
+                        <path d="M45 42 Q 50 46 55 42" stroke="#be185d" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M35 2 L 40 10 L 50 0 L 60 10 L 65 2 L 60 14 L 40 14 Z" fill="#ffd700" filter="drop-shadow(0 0 8px #ffd700)"/>
+                        <defs>
+                            <linearGradient id="gradFatimaCuerpo" x1="0" y1="0" x2="1" y2="1">
+                                <stop offset="0%" stop-color="#ff007f"/>
+                                <stop offset="100%" stop-color="#be185d"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                    <span class="etiqueta-tag-player f-tag">FÁTIMA (REINA)</span>
+                </div>
+
+                <!-- Caja de Regalo 3D Mágica -->
+                <div class="caja-regalo-3d oculto-regalo" id="cajaRegalo">
+                    <div class="tapa-regalo">
+                        <div class="lazo-tapa"></div>
+                    </div>
+                    <div class="cuerpo-regalo">🎁</div>
+                    <div class="luz-magica-regalo"></div>
+                    <div class="particulas-explosion">✨ 💫 ⭐ 🌟 🌸 💎</div>
+                </div>
+            </div>
+
+            <div class="caja-barra-carga">
+                <div class="texto-cargando" id="textoCinematico">CARGANDO SECUENCIA...</div>
+                <div class="barra-progreso-exterior">
+                    <div class="barra-progreso-interior"></div>
+                </div>
+            </div>
+
+            <h2 class="texto-transicion" id="tituloCinematicoText">¡Juntos por siempre, mi yucateca hermosa! 💕</h2>
+            <p class="subtexto-transicion" id="subtextoCinematicoText">Sincronizando universos y preparando sorpresas especiales...</p>
+        </div>
+    </div>
+
+    <!-- MENÚ PRINCIPAL FLOTANTE 3D (3 ARRIBA Y 2 ABAJO) -->
+    <div id="menuFlotante" class="oculto-menu">
+        <div class="encabezado-menu">
+            <h2 class="titulo-menu">Selecciona un detalle ✨❄️</h2>
+            <button id="btnCerrarSesion" class="btn-cerrar-sesion">📦 Cerrar regalo</button>
+        </div>
+
+        <div class="contenedor-flotante">
+            <!-- FILA SUPERIOR (3 OPCIONES) -->
+            <div class="fila-menu">
+                <div class="item-flotante flotar-1 led-rojo" onclick="abrirSeccion('secCarta')">
+                    <div class="brillo-holo"></div>
+                    <span class="icono">📜</span>
+                    <h3>Carta</h3>
+                    <span class="subtext-menu">Mensaje del corazón</span>
+                </div>
+
+                <div class="item-flotante flotar-2 led-azul" onclick="abrirSeccion('secFlores')">
+                    <div class="brillo-holo"></div>
+                    <span class="icono">💐</span>
+                    <h3>Amor y Flores</h3>
+                    <span class="subtext-menu">Aventura con Snoopy</span>
+                </div>
+
+                <div class="item-flotante flotar-3 led-mixto" onclick="abrirSeccion('secDiario')">
+                    <div class="brillo-holo"></div>
+                    <span class="icono">📖</span>
+                    <h3>Diario</h3>
+                    <span class="subtext-menu">Recuerdos compartidos</span>
+                </div>
+            </div>
+
+            <!-- FILA INFERIOR (2 OPCIONES: 4. MEMORAMA, 5. LIBRO DIGITAL) -->
+            <div class="fila-menu">
+                <div class="item-flotante flotar-1 led-azul" onclick="abrirSeccion('secMemorama')">
+                    <div class="brillo-holo"></div>
+                    <span class="icono">🎮</span>
+                    <h3>Memorama</h3>
+                    <span class="subtext-menu">Parejas de frases</span>
+                </div>
+
+                <div class="item-flotante flotar-2 led-rojo" onclick="abrirSeccion('secLibro')">
+                    <div class="brillo-holo"></div>
+                    <span class="icono">📖</span>
+                    <h3>Libro Digital</h3>
+                    <span class="subtext-menu">Nuestra historia de amor</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="modalDetalle" class="modal oculto-modal">
+            <div class="contenido-modal">
+                <span class="cerrar-modal" onclick="cerrarSeccion()">&times;</span>
+                <div id="textoModal"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
